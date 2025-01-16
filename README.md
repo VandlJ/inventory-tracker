@@ -34,13 +34,10 @@ The system is designed for easy deployment:
 
 1\. Clone the repository:
 
-   ```bash
-
-   git clone https://github.com/VandlJ/inventory-tracker.git
-
-   cd inventory-tracker
-
-   ```
+```bash
+git clone https://github.com/VandlJ/inventory-tracker.git
+cd inventory-tracker
+```
 
 2\. Install dependencies for the backend and frontend (instructions to be added).
 
