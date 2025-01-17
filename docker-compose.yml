@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://root:example@mongodb:27017
+      - MONGODB_URI=mongodb://root:example@mongodb:27017/motorcycle_inventory
     depends_on:
       mongodb:
         condition: service_healthy
@@ -23,17 +23,16 @@ services:
       - backend
 
   mongodb:
-    image: mongo:6.0
+    image: mongo:4.4
+    platform: linux/arm64
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-    command: ["mongod", "--bind_ip_all", "--quiet", "--logpath", "/dev/null"]
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    command: ["mongod", "--bind_ip_all", "--quiet", "--auth"]
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: echo 'db.runCommand("ping").ok' | mongo mongodb://root:example@localhost:27017/test --quiet
       interval: 5s
       timeout: 5s
       retries: 3
