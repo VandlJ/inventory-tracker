@@ -1,10 +1,31 @@
-version: '3.8'
 services:
-  backend:
-    build: ./backend
+  app:
+    build: .
     ports:
       - "8000:8000"
-  frontend:
-    build: ./frontend
-    ports:
       - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://root:example@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    command: ["mongod", "--bind_ip_all", "--quiet", "--logpath", "/dev/null"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  mongodb_data:

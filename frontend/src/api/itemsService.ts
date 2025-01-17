@@ -28,3 +28,23 @@ export async function addItem(item: Item) {
         throw error;
     }
 }
+
+export const removeItem = async (id: string) => {
+    try {
+        const response = await axios.delete(`http://localhost:8000/api/items/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error removing item:", error);
+        throw error;
+    }
+};
+
+export const updateItem = async (id: string, item: Item) => {
+    try {
+        const response = await axios.put(`http://localhost:8000/api/items/${id}`, item);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating item:", error);
+        throw error;
+    }
+};
