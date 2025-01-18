@@ -6,15 +6,21 @@ import { getItems, addItem, removeItem, updateItem } from '../api/itemsService';
 interface Item {
     id?: string;
     name: string;
-    category: string;
+    quantity: number;
     price: number;
-    status?: string;
-    notes?: string;
+    category: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 const MainPage: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const [newItem, setNewItem] = useState<Item>({id: '', name: '', category: '', price: 0, status: '', notes: ''});
+    const [newItem, setNewItem] = useState<Item>({
+        name: '',
+        quantity: 0,
+        price: 0,
+        category: ''
+    });
     const [editingItemId, setEditingItemId] = useState<string | null>(null);
     const [editingItem, setEditingItem] = useState<Item | null>(null);
 
@@ -43,7 +49,12 @@ const MainPage: React.FC = () => {
         try {
             const addedItem = await addItem(newItem);
             setItems([...items, addedItem]);
-            setNewItem({id: '', name: '', category: '', price: 0, status: '', notes: ''});
+            setNewItem({
+                name: '',
+                quantity: 0,
+                price: 0,
+                category: ''
+            });
         } catch (error) {
             console.error('Error adding item:', error);
         }
@@ -86,10 +97,10 @@ const MainPage: React.FC = () => {
                         className="w-full p-3 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <input
-                        type="text"
-                        placeholder="Category"
-                        value={newItem.category}
-                        onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                        type="number"
+                        placeholder="Quantity"
+                        value={newItem.quantity}
+                        onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) })}
                         className="w-full p-3 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <input
@@ -97,20 +108,6 @@ const MainPage: React.FC = () => {
                         placeholder="Price"
                         value={newItem.price}
                         onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) })}
-                        className="w-full p-3 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Status"
-                        value={newItem.status}
-                        onChange={(e) => setNewItem({ ...newItem, status: e.target.value })}
-                        className="w-full p-3 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Notes"
-                        value={newItem.notes}
-                        onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
                         className="w-full p-3 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <button onClick={handleAddItem} className="w-full p-3 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-lg shadow hover:scale-105 transform transition">
@@ -133,27 +130,15 @@ const MainPage: React.FC = () => {
                                         className="w-full p-2 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
-                                        type="text"
-                                        value={editingItem?.category}
-                                        onChange={(e) => setEditingItem({ ...editingItem!, category: e.target.value })}
+                                        type="number"
+                                        value={editingItem?.quantity}
+                                        onChange={(e) => setEditingItem({ ...editingItem!, quantity: parseInt(e.target.value) })}
                                         className="w-full p-2 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="number"
                                         value={editingItem?.price}
                                         onChange={(e) => setEditingItem({ ...editingItem!, price: parseFloat(e.target.value) })}
-                                        className="w-full p-2 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={editingItem?.status}
-                                        onChange={(e) => setEditingItem({ ...editingItem!, status: e.target.value })}
-                                        className="w-full p-2 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={editingItem?.notes}
-                                        onChange={(e) => setEditingItem({ ...editingItem!, notes: e.target.value })}
                                         className="w-full p-2 rounded-lg shadow-inner bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <div className="flex space-x-2">
@@ -168,7 +153,7 @@ const MainPage: React.FC = () => {
                             ) : (
                                 <div className="flex-1">
                                     <h3 className="text-lg font-bold">{item.name}</h3>
-                                    <p className="text-sm text-gray-400">Category: {item.category} - Price: {item.price}Kč</p>
+                                    <p className="text-sm text-gray-400">Quantity: {item.quantity} - Price: {item.price}Kč</p>
                                 </div>
                             )}
                             <div className="flex space-x-2">
