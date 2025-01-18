@@ -1,55 +1,63 @@
-from fastapi import APIRouter, HTTPException, FastAPI
-from models.itemModel import Item  # Importuj datový model
-from database.database import item_collection
-from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List
+from database.database import get_db
+from models.item import Item as ItemModel
+from schemas.item import Item, ItemCreate, ItemUpdate, StatusEnum
 
 router = APIRouter()
 
-# Převod ObjectId na string (pro MongoDB)
-def item_helper(item) -> dict:
-    return {
-        "id": str(item["_id"]),
-        "name": item["name"],
-        "category": item["category"],
-        "price": item["price"],
-        "status": item["status"],
-        "notes": item.get("notes"),
-    }
+@router.post("/items/", response_model=Item)
+def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    db_item = ItemModel(**item.dict())
+    try:
+        db.add(db_item)
+        db.commit()
+        db.refresh(db_item)
+        return db_item
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
-# Vytvoření položky
-@router.post("/items")
-async def create_item(item: Item):
-    new_item = await item_collection.insert_one(item.dict())
-    created_item = await item_collection.find_one({"_id": new_item.inserted_id})
-    return item_helper(created_item)
-
-# Získání všech položek
-@router.get("/items")
-async def get_items():
-    items = []
-    async for item in item_collection.find():
-        items.append(item_helper(item))
+@router.get("/items/", response_model=List[Item])
+def read_items(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    items = db.query(ItemModel).offset(skip).limit(limit).all()
     return items
 
-# Aktualizace položky
-@router.put("/items/{id}")
-async def update_item(id: str, item: Item):
-    if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID")
-    updated = await item_collection.update_one({"_id": ObjectId(id)}, {"$set": item.dict()})
-    if updated.matched_count == 0:
+@router.get("/items/{item_id}", response_model=Item)
+def read_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
+    if item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return {"message": "Item updated successfully"}
+    return item
 
-# Smazání položky
-@router.delete("/items/{id}")
-async def delete_item(id: str):
-    if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID")
-    deleted = await item_collection.delete_one({"_id": ObjectId(id)})
-    if deleted.deleted_count == 0:
+@router.put("/items/{item_id}", response_model=Item)
+def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
+    db_item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
+    if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return {"message": "Item deleted successfully"}
+    
+    for key, value in item.dict(exclude_unset=True).items():
+        setattr(db_item, key, value)
+    
+    try:
+        db.commit()
+        db.refresh(db_item)
+        return db_item
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
-app = FastAPI()
-app.include_router(router, prefix="/api")
+@router.delete("/items/{item_id}")
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    db_item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    try:
+        db.delete(db_item)
+        db.commit()
+        return {"message": "Item deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))

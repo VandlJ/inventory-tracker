@@ -1,9 +1,10 @@
 fastapi
 uvicorn[standard]
-motor  # MongoDB driver
-pydantic  # Data validation and settings management
-httpx  # HTTP client for making requests
-python-dotenv  # For loading environment variables from a .env file
-loguru  # Logging library
-pytest  # Testing framework
-pytest-asyncio  # For testing asynchronous code
+sqlalchemy  # SQL ORM
+psycopg2-binary  # PostgreSQL adapter
+pydantic
+httpx
+python-dotenv
+loguru
+pytest
+pytest-asyncio

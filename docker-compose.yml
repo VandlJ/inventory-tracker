@@ -6,9 +6,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://root:example@mongodb:27017
+      - DATABASE_URL=postgresql://root:example@postgres:5432/inventory
     depends_on:
-      mongodb:
+      postgres:
         condition: service_healthy
 
   frontend:
@@ -22,22 +22,22 @@ services:
     depends_on:
       - backend
 
-  mongodb:
-    image: mongo:6.0
+  postgres:
+    image: postgres:13-alpine
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-    command: ["mongod", "--bind_ip_all", "--quiet", "--logpath", "/dev/null"]
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=inventory
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: ["CMD-SHELL", "pg_isready -U root -d inventory"]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
-  mongodb_data:
+  postgres_data:
