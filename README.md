@@ -51,11 +51,11 @@ cd inventory-tracker
 
 - [x] Set up the basic project structure.
 
-- [ ] Implement backend APIs for CRUD operations.
+- [x] Implement backend APIs for CRUD operations.
 
-- [ ] Create a React-based frontend for the user interface.
+- [x] Create a React-based frontend for the user interface.
 
-- [ ] Test locally on Docker.
+- [x] Test locally on Docker.
 
 ### Future Enhancements:
 
