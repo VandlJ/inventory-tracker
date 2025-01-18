@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from database.database import get_db
 from models.item import Item as ItemModel
-from schemas.item import Item, ItemCreate, ItemUpdate
+from schemas.item import Item, ItemCreate, ItemUpdate, StatusEnum
 
 router = APIRouter()
 
