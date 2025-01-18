@@ -1,6 +1,6 @@
 import { Item } from '../types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.2.172:8000';
 
 export const getItems = async (): Promise<Item[]> => {
     const response = await fetch(`${API_URL}/api/items/`);

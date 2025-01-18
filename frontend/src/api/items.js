@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api/items";
+const API_URL = "http://192.168.2.172:8000/api/items";
 
 // Získání všech položek
 export const fetchItems = async () => {
