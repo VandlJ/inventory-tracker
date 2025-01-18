@@ -2,16 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { getItems, addItem, removeItem, updateItem } from '../api/itemsService';
-
-interface Item {
-    id?: string;
-    name: string;
-    quantity: number;
-    price: number;
-    category: string;
-    created_at?: string;
-    updated_at?: string;
-}
+import { Item } from '../types';
 
 const MainPage: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
@@ -21,7 +12,7 @@ const MainPage: React.FC = () => {
         price: 0,
         category: ''
     });
-    const [editingItemId, setEditingItemId] = useState<string | null>(null);
+    const [editingItemId, setEditingItemId] = useState<number | null>(null);
     const [editingItem, setEditingItem] = useState<Item | null>(null);
 
     useEffect(() => {
@@ -36,7 +27,7 @@ const MainPage: React.FC = () => {
         fetchItems();
     }, []);
 
-    const handleRemoveItem = async (id: string) => {
+    const handleRemoveItem = async (id: number) => {
         try {
             await removeItem(id);
             setItems(items.filter(item => item.id !== id));
