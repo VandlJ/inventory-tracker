@@ -20,8 +20,8 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/items/", response_model=List[Item])
-def read_items(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    items = db.query(ItemModel).offset(skip).limit(limit).all()
+def read_items(db: Session = Depends(get_db)):
+    items = db.query(ItemModel).all()
     return items
 
 @router.get("/items/{item_id}", response_model=Item)
