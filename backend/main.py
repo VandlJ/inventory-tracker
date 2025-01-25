@@ -21,4 +21,4 @@ app.include_router(items.router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Motorcycle Inventory Tracker API!"}
+    return {"message": "Welcome to Inventory Tracker API!"}
