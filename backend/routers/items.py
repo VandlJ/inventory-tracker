@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, FastAPI
 from sqlalchemy.orm import Session
 from typing import List
 from database.database import get_db
 from models.item import Item as ItemModel
 from schemas.item import Item, ItemCreate, ItemUpdate, StatusEnum
+
+
+app = FastAPI()
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, HTTPS world!"}
+
+@app.get("/items/")
+async def read_items():
+    return {"items": ["item1", "item2"]}
 
 router = APIRouter()
 
