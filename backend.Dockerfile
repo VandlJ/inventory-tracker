@@ -20,4 +20,4 @@ ENV HOST=0.0.0.0
 EXPOSE 8000
 
 # Start backend
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "/app/backend"] 
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/etc/letsencrypt/live/storagegrid.eu/privkey.pem", "--ssl-certfile", "/etc/letsencrypt/live/storagegrid.eu/fullchain.pem", "--app-dir", "/app/backend"]

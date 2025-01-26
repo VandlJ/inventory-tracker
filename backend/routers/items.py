@@ -4,8 +4,6 @@ from typing import List
 from database.database import get_db
 from models.item import Item as ItemModel
 from schemas.item import Item, ItemCreate, ItemUpdate, StatusEnum
-import uvicorn
-from routers.items import app
 
 
 app = FastAPI()
@@ -74,7 +72,3 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="/etc/letsencrypt/live/yourdomain.com/privkey.pem", ssl_certfile="/etc/letsencrypt/live/yourdomain.com/fullchain.pem")
