@@ -4,6 +4,8 @@ from typing import List
 from database.database import get_db
 from models.item import Item as ItemModel
 from schemas.item import Item, ItemCreate, ItemUpdate, StatusEnum
+from schemas.user import UserCreate, UserLogin
+from auth import register_user, authenticate_user, create_access_token
 
 
 app = FastAPI()
@@ -72,3 +74,15 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/register/")
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    return register_user(db, user)
+
+@router.post("/login/")
+def login(user: UserLogin, db: Session = Depends(get_db)):
+    db_user = authenticate_user(db, user.username, user.password)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    access_token = create_access_token(data={"sub": db_user.username})
+    return {"access_token": access_token, "token_type": "bearer"}

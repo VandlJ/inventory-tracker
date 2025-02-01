@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from loguru import logger
+from models.user import User  # Add this import
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://root:example@localhost:5432/inventory")
 
